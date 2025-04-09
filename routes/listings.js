@@ -17,7 +17,7 @@ const upload = multer({
   limits: { fieldSize: 25 * 1024 * 1024 },
 });
 
-const schema = {
+const schema = Joi.object({
   title: Joi.string().required(),
   description: Joi.string().allow(""),
   price: Joi.number().required().min(1),
@@ -26,7 +26,7 @@ const schema = {
     latitude: Joi.number().required(),
     longitude: Joi.number().required(),
   }).optional(),
-};
+});
 
 const validateCategoryId = (req, res, next) => {
   if (!categoriesStore.getCategory(parseInt(req.body.categoryId)))
@@ -66,7 +66,7 @@ router.post(
       description: req.body.description,
     };
     listing.images = req.images.map((fileName) => ({ fileName: fileName }));
-    if (req.body.location) listing.location = JSON.parse(req.body.location);
+    if (req.body.location) listing.location = req.body.location;
     if (req.user) listing.userId = req.user.userId;
 
     store.addListing(listing);
